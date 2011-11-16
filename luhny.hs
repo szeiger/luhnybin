@@ -15,19 +15,15 @@ luhnStart cs =
         dluhn cs len = let cs2 = take len cs in
           if length cs2 < len then 0 else if luhn cs2 then len else 0
 
-mapGroups cs = concatMap f $ groupBy (\a b -> isD a == isD b) cs
-  where f cs = if isD $ head cs then tr 0 $ withStart cs else cs
-        isD = flip elem "0123456789- "
-
-withStart [] = []
-withStart (x:xs) = (x, luhnStart $ x:xs) : withStart xs
+mapGroups cs = concatMap (tr 0) $ groupBy (\a b -> isD a == isD b) cs
+  where isD = flip elem "0123456789- "
 
 tr seq [] = []
-tr seq ((x,i):xs) = let m = max seq i in
-  if isDigit x then (if m > 0 then 'X' else x) : tr (m-1) xs
-  else x : tr seq xs
+tr seq (x:xs) =
+  let m = max seq i
+      i = luhnStart $ x:xs in
+    if isDigit x then (if m > 0 then 'X' else x) : tr (m-1) xs
+    else x : tr seq xs
 
-main = do
-  hSetBinaryMode stdin True
-  hSetBinaryMode stdout True
+main = hSetBinaryMode stdin True >> hSetBinaryMode stdout True >>
   getContents >>= putStr . mapGroups
