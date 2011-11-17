@@ -20,8 +20,7 @@ mapGroups cs = concatMap (tr 0) $ groupBy (\a b -> isD a == isD b) cs
 
 tr seq [] = []
 tr seq (x:xs) =
-  let m = max seq i
-      i = luhnStart $ x:xs in
+  let m = max seq $ luhnStart $ x:xs in
     if isDigit x then (if m > 0 then 'X' else x) : tr (m-1) xs
     else x : tr seq xs
 
