@@ -2,13 +2,12 @@ import Data.List
 import Data.Char
 import System.IO
 
-luhn cs = lsum cs `mod` 10 == 0
-  where lsum = sum . zipWith f [1..] . map digitToInt . reverse
-        f i x = uncurry (+) $ ((2-i `mod` 2) * x) `divMod` 10
+luhn i cs = (sum $ zipWith f [i..] cs) `mod` 10 == 0
+  where f i x = uncurry (+) $ ((1 + i `mod` 2) * digitToInt x) `divMod` 10
 
 luhnLen cs = maximum $ map (dluhn $ filter isDigit cs) [14..16]
   where dluhn cs len = let es = take len cs in
-          if length es >= len && luhn es then len else 0
+          if length es == len && luhn (len+1) es then len else 0
 
 tr i [] = []
 tr i (x:xs) = let m = max i $ luhnLen (x:xs) in
